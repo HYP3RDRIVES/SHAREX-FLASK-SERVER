@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/custom.css">
+    <meta property="og:image" content="https://i.hypr.ax{{imgloc}}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="900" />
+    <!--<link rel="img_src" href="https://i.0cdn.me{{imgloc}}"-->
+</head>
+<body>
+<style>
+.img{
+object-fit: cover;
+max-height: 80vh;
+max-width:90vw;
+width: auto;
+height: auto;
+}
+</style>
+<script>
+function copyURL() {
+    var btn = document.getElementById('share');
+    navigator.clipboard.writeText(window.location.href);
+    console.log("copy event");
+    share.innerHTML = "Copied";
+    setTimeout(() => { btn.innerHTML = "Share Image"; }, 2000); 
+}
+</script>
+    
+    <h1>i.hypr.ax</h1>
+    <p>Image and file hosting and serving + CDN for Hyperdrive.</p>
+    <div style="align-content: center;margin: auto; margin-bottom:15px !important;">
+        <img class="img" src="{{imgloc}}" ></img>
+    </div>
+    <a class="btn" id="share" href="javascript:copyURL()">Share Image</a>
+    <a class="btn" href="https://www.reddit.com/user/Hyperdrive_1">Reddit: u/Hyperdrive_1</a>
+</body>

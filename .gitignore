@@ -1,0 +1,6 @@
+start.sh
+files/
+1/
+db.sqlite
+keybase.txt
+__pycache__/
