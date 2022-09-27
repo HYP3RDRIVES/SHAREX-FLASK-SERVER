@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 app.config['FLASK_HOST'] = os.environ.get('FLASK_HOST')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+filedir = str(os.environ.get("FILES_DIR"))
 db = SQLAlchemy(app)
 
 class obfuscation(db.Model):
@@ -30,7 +31,7 @@ def index():
 @app.route("/images/<fileloc>")
 def fileload(fileloc):
     if 'User-Agent' not in request.headers:
-        return send_from_directory("files", fileloc)
+        return send_from_directory("filedir", fileloc)
     headers = request.headers['User-Agent']
 #    print(headers)
 #    print(fileloc)
@@ -43,7 +44,7 @@ def fileload(fileloc):
     if serve == True or headers == "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)" or headers == "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0" or "Discordbot/2.0;" in headers or "twitterbot" in headers.lower() or "github-camo" in headers.lower() or "Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)" in headers:
 #        if not fileloc.endswith('.ico'):
 #        print("served "+fileloc)
-        return send_from_directory("files", fileloc)
+        return send_from_directory(filedir, fileloc)
     else:
         target = secrets.token_urlsafe(100)
         dbloc = obfuscation.query.filter_by(code=target).first()
@@ -69,7 +70,7 @@ def static_dir():
          path = str(dbloc.file_src)
          db.session.delete(dbloc)
          db.session.commit()
-         return send_from_directory("files", path)
+         return send_from_directory(filedir, path)
 
 
 
