@@ -4,11 +4,17 @@ from jinja2.loaders import FileSystemLoader
 from flask_sqlalchemy import SQLAlchemy
 import secrets
 import os
+import base64
+import requests
+
 app = Flask(__name__)
 
 app.config['FLASK_HOST'] = os.environ.get('FLASK_HOST')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 filedir = str(os.environ.get("FILES_DIR"))
+github_metrics = str(os.environ.get("GITHUB_METRICS"))
+github_readme = str(os.environ.get("GITHUB_README_STATS"))
+
 db = SQLAlchemy(app)
 
 class obfuscation(db.Model):
@@ -16,8 +22,9 @@ class obfuscation(db.Model):
     code = db.Column(db.String(100))
     file_src = db.Column(db.String(300))
 
-db.create_all()
-db.session.commit()
+with app.app_context():
+    db.create_all()
+    db.session.commit()
 
 
 @app.route("/")
@@ -30,8 +37,9 @@ def index():
 @app.route("/<fileloc>")
 @app.route("/images/<fileloc>")
 def fileload(fileloc):
+#    print("active")
     if 'User-Agent' not in request.headers:
-        return send_from_directory("filedir", fileloc)
+        return send_from_directory(filedir, fileloc)
     headers = request.headers['User-Agent']
 #    print(headers)
 #    print(fileloc)
@@ -41,7 +49,7 @@ def fileload(fileloc):
             serve = False
 #            print("srv false")
             break
-    if serve == True or headers == "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)" or headers == "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0" or "Discordbot/2.0;" in headers or "twitterbot" in headers.lower() or "github-camo" in headers.lower() or "Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)" in headers:
+    if serve == True or headers == "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)" or headers == "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0" or "Discordbot/2.0;" in headers or "twitterbot" in headers.lower() or "github-camo" in headers.lower() or "Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)" in headers or headers=="-":
 #        if not fileloc.endswith('.ico'):
 #        print("served "+fileloc)
         return send_from_directory(filedir, fileloc)
@@ -73,4 +81,10 @@ def static_dir():
          return send_from_directory(filedir, path)
 
 
-
+@app.route("/github-profile.svg")
+def github_profile():
+    r = requests.get(github_metrics)
+    github_metric_output=str(base64.b64encode(r.content)).split('\'')[1]
+    q = requests.get(github_readme)
+    github_readme_output=str(base64.b64encode(q.content)).split('\'')[1]
+    return render_template("gh-profile.html", github_readme_stats=github_readme_output, github_metrics=github_metric_output), {'Content-Type':'image/svg+xml; charset=utf-8'}
