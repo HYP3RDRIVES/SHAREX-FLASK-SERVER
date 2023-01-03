@@ -26,13 +26,9 @@ with app.app_context():
     db.create_all()
     db.session.commit()
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
-
-
-
 
 @app.route("/<fileloc>")
 @app.route("/images/<fileloc>")
@@ -80,8 +76,10 @@ def static_dir():
          db.session.commit()
          return send_from_directory(filedir, path)
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['POST', 'GET'])
 def upload():
+    if request.method == 'GET':
+        return "<script>location.replace('/');</script>"
     if 'Authorization' not in request.headers:
         return "Unauthorized", 401
     if request.headers['Authorization'] != os.environ.get('UPLOAD_KEY'):
