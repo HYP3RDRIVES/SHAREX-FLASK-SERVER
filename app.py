@@ -80,11 +80,17 @@ def static_dir():
          db.session.commit()
          return send_from_directory(filedir, path)
 
-
-@app.route("/github-profile.svg")
-def github_profile():
-    r = requests.get(github_metrics)
-    github_metric_output=str(base64.b64encode(r.content)).split('\'')[1]
-    q = requests.get(github_readme)
-    github_readme_output=str(base64.b64encode(q.content)).split('\'')[1]
-    return render_template("gh-profile.html", github_readme_stats=github_readme_output, github_metrics=github_metric_output), {'Content-Type':'image/svg+xml; charset=utf-8'}
+@app.route('/upload', methods=['POST'])
+def upload():
+    if 'Authorization' not in request.headers:
+        return "Unauthorized", 401
+    if request.headers['Authorization'] != os.environ.get('UPLOAD_KEY'):
+        return "Unauthorized", 401
+    file = request.files.get("upload")
+    if file is None:
+        return "No file", 400
+    if file.filename == "":
+        return "No file", 400
+    if file:
+        file.save(os.path.join(filedir, file.filename))
+        return "File uploaded", 200
