@@ -45,7 +45,9 @@ def fileload(fileloc):
             serve = False
 #            print("srv false")
             break
-    if serve == True or headers == "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)" or headers == "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0" or "Discordbot/2.0;" in headers or "twitterbot" in headers.lower() or "github-camo" in headers.lower() or "Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)" in headers or headers=="-":
+    if "google" in headers.lower() or 'skype' in headers.lower() or 'github' in headers.lower():
+        return send_from_directory(filedir, fileloc)
+    if serve == True or headers == "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)" or headers == "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.6; rv:92.0) Gecko/20100101 Firefox/92.0" or "Discordbot/2.0;" in headers or "twitterbot" in headers.lower() or "github-camo" in headers.lower() or headers=="-" or headers == "Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)" or "GoogleImageProxy" in headers:
 #        if not fileloc.endswith('.ico'):
 #        print("served "+fileloc)
         return send_from_directory(filedir, fileloc)
